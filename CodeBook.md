@@ -1,35 +1,17 @@
-#
-#Load libraries
-#
-library("data.table")
-library("dplyr")
+#Description of Transformation 
 
-#
-#Preparing the target directory for storing data
-#
-if (!file.exists("GCD")) {
-  dir.create("GCD")
-}
-if (!file.exists("GCD/Project")) {
-  dir.create("GCD/Project")
-}
-#
-#Download the zip file and extracting the files
-#
-path <- "./GCD/Project/"
-dataset <- paste0(path,"dataset.zip")
 
-if(!file.exists(dataset)){
-  fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-  download.file(fileUrl, destfile = dataset, method = "curl")
-  unzip(dataset, exdir = path, unzip = "unzip")
-}
 
-pathds <- paste0(path,"UCI HAR Dataset/")
+##Libraries used
 
-#STEP 1. Merge the training and the test sets to create one data set
+* data.table
+* dplyr
 
-#Using data frame for storing files
+##STEP 1. Merge the training and the test sets to create one data set
+
+Using data frame for storing files
+
+```R
 subjectTrain <- read.table(paste0(pathds,"train/subject_train.txt"))
 subjectTest <- read.table(paste0(pathds,"test/subject_test.txt"))
 
@@ -38,8 +20,9 @@ yTrain <- read.table(paste0(pathds,"train/y_train.txt"))
 
 xTest <- read.table(paste0(pathds,"test/X_test.txt"))
 yTest <- read.table(paste0(pathds,"test/y_test.txt"))
+```
 
-# Merge training and test data
+Merge training and test data
 subject <- rbind(subjectTrain,subjectTest)
 x <- rbind(xTrain,xTest)
 y <- rbind(yTrain,yTest)
