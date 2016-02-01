@@ -1,6 +1,24 @@
-#Description of Transformation 
+#Description of variables in tidy dataset
+
+Varible | Description
+------------ | -------------
+subject | ID the subject who performed the activity for each window sample. Its range is from 1 to 30.
+activityName |  WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING
+------------ | -------------
+timeBodyAcceleration |Mean and Standard deviation in X,Y,Z and total.  
+timeGravityAcceleration | Mean and Standard deviation in X,Y,Z and total
+timeBodyAccelerationJerk| Mean and Standard deviation in X,Y,Z and total
+timeBodyOrientation | Mean and Standard deviation in X,Y,Z and total
+timeBodyOrientationJerk | Mean and Standard deviation in X,Y,Z and total
+------------ | -------------
+freqBodyAcceleration | Mean and Standard deviation in X,Y,Z and total 
+freqBodyAccelerationJerk | Mean and Standard deviation in X,Y,Z and total
+freqBodyOrientation | Mean and Standard deviation in X,Y,Z and total
+freqBodyOrientationJerk | Mean and Standard deviation in X,Y,Z and total
+------------ | -------------
 
 
+#Description of Transformations
 
 ##Libraries used
 
