@@ -19,4 +19,4 @@ The code takes for granted all the data is present in the same folder, un-compre
 - Assigns appropriately labels the data set with descriptive variable names.
 - Creates a tidy data set with the average of each variable for each activity and each subject.
 
-The output of the 5th step is called averages_data.txt, and uploaded in the course project's form.
+`TDS.txt` contains the tidy data set produced by R code.
