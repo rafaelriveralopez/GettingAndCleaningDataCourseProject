@@ -12,6 +12,7 @@
 Using data frame for storing files
 
 ```R
+
 subjectTrain <- read.table(paste0(pathds,"train/subject_train.txt"))
 subjectTest <- read.table(paste0(pathds,"test/subject_test.txt"))
 
@@ -23,111 +24,129 @@ yTest <- read.table(paste0(pathds,"test/y_test.txt"))
 ```
 
 Merge training and test data
+
+```R
+
 subject <- rbind(subjectTrain,subjectTest)
 x <- rbind(xTrain,xTest)
 y <- rbind(yTrain,yTest)
+```
 
-#Rename the column name of subject data 
+Rename the column name of subject data 
+
+Rename the column name of y data (activity label) 
+
+Merge columns of data
+
+```R
 subject <- rename(subject, subject = V1)
-
-#Rename the column name of y data (activity label) 
 y <- rename(y, activityNumber = V1)
-
-#Merge columns of data
 data <- cbind(x,subject,y)
+```
 
-#END OF STEP 1
+##STEP 2. Extract only the measurements on the mean and standard deviation for each measurement
 
-#STEP 2. Extract only the measurements on the mean and standard deviation for each measurement
-
-#Read feature description file
+Read feature description file
+```R
 features <- read.table(paste(pathds,"features.txt",sep=""))
-
-#Rename columns V1 and V2 in features data frame
+```
+Rename columns V1 and V2 in features data frame
+```R
 features <- rename(features, featureNumber = V1, featureName=V2)
-
-#Identify the feature names that contain "mean" or "std"
+```
+Identify the feature names that contain "mean" or "std"
+```R
 match<-grep("mean\\(\\)|std\\(\\)",features$"featureName")
-
-#Select the rows that feature number is matching
+```
+Select the rows that feature number is matching
+```R
 features <- filter(features,features$"featureNumber" %in% match)
-
-#Add column with column name in data 
+```
+Add column with column name in data
+```R 
 features <- mutate(features,featureColumn = paste0("V",featureNumber))
-
-#Select only columns of data that are in features with mean or std
+```
+Select only columns of data that are in features with mean or std
+```R
 select <- select(data,features$"featureNumber")
-
-#Add subject and activity number for data set
-#data <- mutate(select, subject = data$"subject", activityNumber= data$"activityNumber")
+```
+Add subject and activity number for data set
+```R
 data <- mutate(subject = data$"subject", activityNumber= data$"activityNumber", select)
+```
 
-#END OF STEP 2
+##STEP 3. Uses descriptive activity names to name the activities in the data set.
 
-#STEP 3. Uses descriptive activity names to name the activities in the data set.
+Read activity labels file
 
-#Read activity labels file
+Rename first and second columns with activity number and activity name
+
+Merge data set with activities using activity number as link
+
+```R
 activities <- read.table(paste0(pathds,"activity_labels.txt"))
-
-#Rename first and second columns with activity number and activity name
 activities <- rename(activities, activityNumber = V1, activityName = V2)
-
-#Merge data set with activities using activity number as link
 dt <- merge(data, activities, by="activityNumber", all.x=TRUE)
+```
 
-#END OF STEP 3
+##STEP 4. Appropriately labels the data set with descriptive activity names
 
-#STEP 4. Appropriately labels the data set with descriptive activity names
-
-#Use features file for obtaining feature names
+Use features file for obtaining feature names
+```R
 featureV <- features$"featureColumn"
 featureName <- features$"featureName"
+```
+Manipulate the names of featureName list
 
-#Manipulate the names of featureName list
-
-#Remove ()
+Remove ()
+Change 
+- mean for Mean
+- std for StdDev
+- BodyBody for Body
+- Acc for Acceleration
+- Gyro for Orientation
+- Mag for Magnitude
+- tBody for timeBody
+- tGravity for timeGravity
+- fBody for freqBody
+- fGravity for freqGravity
+```R
 featureName <- sub("()","",as.character(features$featureName),fixed=TRUE)
-#Change mean for Mean
 featureName <- sub("mean","Mean",featureName,fixed=TRUE)
-#Change std for StdDev
 featureName <- sub("std","StdDev",featureName,fixed=TRUE)
-#Change BodyBody for Body
 featureName <- sub("BodyBody","Body",featureName,fixed=TRUE)
-#Change Acc for Acceleration
 featureName <- sub("Acc","Acceleration",featureName,fixed=TRUE)
-#Change Gyro for Orientation
 featureName <- sub("Gyro","Orientation",featureName,fixed=TRUE)
-#Change Mag for Magnitude
 featureName <- sub("Mag","Magnitude",featureName,fixed=TRUE)
-#Change tBody for timeBody
 featureName <- sub("tBody","timeBody",featureName,fixed=TRUE)
-#Change tGravity for timeGravity
 featureName <- sub("tGravity","timeGravity",featureName,fixed=TRUE)
-#Change fBody for freqBody
 featureName <- sub("fBody","freqBody",featureName,fixed=TRUE)
-#Change fGravity for freqGravity
 featureName <- sub("fGravity","freqGravity",featureName,fixed=TRUE)
-
-#Change column names in data set with featureName
+```
+Change column names in data set with featureName
+```R
 for(i in 1:length(featureV)){
   names(dt)[names(dt)==featureV[i]] <- featureName[i]
 }
+```
 
-#END OF STEP 4
+##STEP 5. Creation of a tidy data set with the average of each variable for each activity and each subject
 
-#STEP 5. Creation of a tidy data set with the average of each variable for each activity 
-#       and each subject
-
-#Eliminate activityNumber column of dataset
+Eliminate activityNumber column of dataset
+```R
 dt <- select(dt, -activityNumber)
-
-#Divide dataframe for each subject and activity, the value of each feature 
+```
+Divide dataframe for each subject and activity, the value of each feature 
+```R
 dt.melted <- melt(dt, id=c("subject","activityName"))
+```
 
-#Calculate the mean of each feature, for each subject and activity 
+Calculate the mean of each feature, for each subject and activity 
+```R
 dt.mean <- dcast(dt.melted, subject + activityName ~ variable, mean)
-
-#
+```
+Create the tidy data set
+```R
 write.table(dt.mean,"TDS.txt",row.names=FALSE,quote = FALSE)
-
+```
 
